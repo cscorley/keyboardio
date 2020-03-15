@@ -6,12 +6,10 @@
 #define BUILD_INFORMATION "locally built"
 #endif
 
-
 /**
  * These #include directives pull in the Kaleidoscope firmware core,
  * as well as the Kaleidoscope plugins we use in the Model 01's firmware
  */
-
 
 // The Kaleidoscope core
 #include "Kaleidoscope.h"
@@ -88,11 +86,11 @@
   * a macro key is pressed.
   */
 
-enum { MACRO_VERSION_INFO,
-       MACRO_ANY
-     };
-
-
+enum
+{
+  MACRO_VERSION_INFO,
+  MACRO_ANY
+};
 
 /** The Model 01's key layouts are defined as 'keymaps'. By default, there are three
   * keymaps: The standard QWERTY keymap, the "Function layer" keymap and the "Numpad"
@@ -142,8 +140,12 @@ enum { MACRO_VERSION_INFO,
   *
   */
 
-enum { PRIMARY, NUMPAD, FUNCTION }; // layers
-
+enum
+{
+  PRIMARY,
+  NUMPAD,
+  FUNCTION
+}; // layers
 
 /**
   * To change your keyboard's layout from QWERTY to DVORAK or COLEMAK, comment out the line
@@ -163,12 +165,11 @@ enum { PRIMARY, NUMPAD, FUNCTION }; // layers
 // #define PRIMARY_KEYMAP_DVORAK
 // #define PRIMARY_KEYMAP_CUSTOM
 
-
-
 /* This comment temporarily turns off astyle's indent enforcement
  *   so we can make the keymaps actually resemble the physical key layout better
  */
 // *INDENT-OFF*
+// clang-format off
 
 KEYMAPS(
 
@@ -280,14 +281,17 @@ KEYMAPS(
 
 /* Re-enable astyle's indent enforcement */
 // *INDENT-ON*
+// clang-format on
 
 /** versionInfoMacro handles the 'firmware version info' macro
  *  When a key bound to the macro is pressed, this macro
  *  prints out the firmware build information as virtual keystrokes
  */
 
-static void versionInfoMacro(uint8_t keyState) {
-  if (keyToggledOn(keyState)) {
+static void versionInfoMacro(uint8_t keyState)
+{
+  if (keyToggledOn(keyState))
+  {
     Macros.type(PSTR("Keyboardio Model 01 - Kaleidoscope "));
     Macros.type(PSTR(BUILD_INFORMATION));
   }
@@ -301,10 +305,12 @@ static void versionInfoMacro(uint8_t keyState) {
  *
  */
 
-static void anyKeyMacro(uint8_t keyState) {
+static void anyKeyMacro(uint8_t keyState)
+{
   static Key lastKey;
   bool toggledOn = false;
-  if (keyToggledOn(keyState)) {
+  if (keyToggledOn(keyState))
+  {
     lastKey.keyCode = Key_A.keyCode + (uint8_t)(millis() % 36);
     toggledOn = true;
   }
@@ -312,7 +318,6 @@ static void anyKeyMacro(uint8_t keyState) {
   if (keyIsPressed(keyState))
     kaleidoscope::hid::pressKey(lastKey, toggledOn);
 }
-
 
 /** macroAction dispatches keymap events that are tied to a macro
     to that macro. It takes two uint8_t parameters.
@@ -326,8 +331,10 @@ static void anyKeyMacro(uint8_t keyState) {
 
  */
 
-const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
-  switch (macroIndex) {
+const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState)
+{
+  switch (macroIndex)
+  {
 
   case MACRO_VERSION_INFO:
     versionInfoMacro(keyState);
@@ -340,12 +347,9 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
   return MACRO_NONE;
 }
 
-
-
 // These 'solid' color effect definitions define a rainbow of
 // LED color modes calibrated to draw 500mA or less on the
 // Keyboardio Model 01.
-
 
 static kaleidoscope::plugin::LEDSolidColor solidRed(160, 0, 0);
 static kaleidoscope::plugin::LEDSolidColor solidOrange(140, 70, 0);
@@ -358,8 +362,10 @@ static kaleidoscope::plugin::LEDSolidColor solidViolet(130, 0, 120);
 /** toggleLedsOnSuspendResume toggles the LEDs off when the host goes to sleep,
  * and turns them back on when it wakes up.
  */
-void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event event) {
-  switch (event) {
+void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event event)
+{
+  switch (event)
+  {
   case kaleidoscope::plugin::HostPowerManagement::Suspend:
     LEDControl.set_all_leds_to({0, 0, 0});
     LEDControl.syncLeds();
@@ -378,7 +384,8 @@ void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event 
  * resume, and sleep) to other functions that perform action based on these
  * events.
  */
-void hostPowerManagementEventHandler(kaleidoscope::plugin::HostPowerManagement::Event event) {
+void hostPowerManagementEventHandler(kaleidoscope::plugin::HostPowerManagement::Event event)
+{
   toggleLedsOnSuspendResume(event);
 }
 
@@ -389,7 +396,8 @@ void hostPowerManagementEventHandler(kaleidoscope::plugin::HostPowerManagement::
  * These are the names of your magic combos. They will be used by the
  * `USE_MAGIC_COMBOS` call below.
  */
-enum {
+enum
+{
   // Toggle between Boot (6-key rollover; for BIOSes and early boot) and NKRO
   // mode.
   COMBO_TOGGLE_NKRO_MODE,
@@ -403,129 +411,128 @@ enum {
  * This simply toggles the keyboard protocol via USBQuirks, and wraps it within
  * a function with an unused argument, to match what MagicCombo expects.
  */
-static void toggleKeyboardProtocol(uint8_t combo_index) {
+static void toggleKeyboardProtocol(uint8_t combo_index)
+{
   USBQuirks.toggleKeyboardProtocol();
 }
 
 /**
  *  This enters the hardware test mode
  */
-static void enterHardwareTestMode(uint8_t combo_index) {
+static void enterHardwareTestMode(uint8_t combo_index)
+{
   HardwareTestMode.runTests();
 }
-
 
 /** Magic combo list, a list of key combo and action pairs the firmware should
  * recognise.
  */
 USE_MAGIC_COMBOS({.action = toggleKeyboardProtocol,
                   // Left Fn + Esc + Shift
-                  .keys = { R3C6, R2C6, R3C7 }
-}, {
-  .action = enterHardwareTestMode,
-  // Left Fn + Prog + LED
-  .keys = { R3C6, R0C0, R0C6 }
-});
+                  .keys = {R3C6, R2C6, R3C7}},
+                 {.action = enterHardwareTestMode,
+                  // Left Fn + Prog + LED
+                  .keys = {R3C6, R0C0, R0C6}});
 
 // First, tell Kaleidoscope which plugins you want to use.
 // The order can be important. For example, LED effects are
 // added in the order they're listed here.
 KALEIDOSCOPE_INIT_PLUGINS(
-  // The EEPROMSettings & EEPROMKeymap plugins make it possible to have an
-  // editable keymap in EEPROM.
-  EEPROMSettings,
-  EEPROMKeymap,
+    // The EEPROMSettings & EEPROMKeymap plugins make it possible to have an
+    // editable keymap in EEPROM.
+    EEPROMSettings,
+    EEPROMKeymap,
 
-  // Focus allows bi-directional communication with the host, and is the
-  // interface through which the keymap in EEPROM can be edited.
-  Focus,
+    // Focus allows bi-directional communication with the host, and is the
+    // interface through which the keymap in EEPROM can be edited.
+    Focus,
 
-  // FocusSettingsCommand adds a few Focus commands, intended to aid in
-  // changing some settings of the keyboard, such as the default layer (via the
-  // `settings.defaultLayer` command)
-  FocusSettingsCommand,
+    // FocusSettingsCommand adds a few Focus commands, intended to aid in
+    // changing some settings of the keyboard, such as the default layer (via the
+    // `settings.defaultLayer` command)
+    FocusSettingsCommand,
 
-  // FocusEEPROMCommand adds a set of Focus commands, which are very helpful in
-  // both debugging, and in backing up one's EEPROM contents.
-  FocusEEPROMCommand,
+    // FocusEEPROMCommand adds a set of Focus commands, which are very helpful in
+    // both debugging, and in backing up one's EEPROM contents.
+    FocusEEPROMCommand,
 
-  // The boot greeting effect pulses the LED button for 10 seconds after the
-  // keyboard is first connected
-  BootGreetingEffect,
+    // The boot greeting effect pulses the LED button for 10 seconds after the
+    // keyboard is first connected
+    BootGreetingEffect,
 
-  // The hardware test mode, which can be invoked by tapping Prog, LED and the
-  // left Fn button at the same time.
-  HardwareTestMode,
+    // The hardware test mode, which can be invoked by tapping Prog, LED and the
+    // left Fn button at the same time.
+    HardwareTestMode,
 
-  // LEDControl provides support for other LED modes
-  LEDControl,
+    // LEDControl provides support for other LED modes
+    LEDControl,
 
-  // We start with the LED effect that turns off all the LEDs.
-  LEDOff,
+    // We start with the LED effect that turns off all the LEDs.
+    LEDOff,
 
-  // The rainbow effect changes the color of all of the keyboard's keys at the same time
-  // running through all the colors of the rainbow.
-  LEDRainbowEffect,
+    // The rainbow effect changes the color of all of the keyboard's keys at the same time
+    // running through all the colors of the rainbow.
+    LEDRainbowEffect,
 
-  // The rainbow wave effect lights up your keyboard with all the colors of a rainbow
-  // and slowly moves the rainbow across your keyboard
-  LEDRainbowWaveEffect,
+    // The rainbow wave effect lights up your keyboard with all the colors of a rainbow
+    // and slowly moves the rainbow across your keyboard
+    LEDRainbowWaveEffect,
 
-  // The chase effect follows the adventure of a blue pixel which chases a red pixel across
-  // your keyboard. Spoiler: the blue pixel never catches the red pixel
-  LEDChaseEffect,
+    // The chase effect follows the adventure of a blue pixel which chases a red pixel across
+    // your keyboard. Spoiler: the blue pixel never catches the red pixel
+    LEDChaseEffect,
 
-  // These static effects turn your keyboard's LEDs a variety of colors
-  solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
+    // These static effects turn your keyboard's LEDs a variety of colors
+    solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
 
-  // The breathe effect slowly pulses all of the LEDs on your keyboard
-  LEDBreatheEffect,
+    // The breathe effect slowly pulses all of the LEDs on your keyboard
+    LEDBreatheEffect,
 
-  // The AlphaSquare effect prints each character you type, using your
-  // keyboard's LEDs as a display
-  AlphaSquareEffect,
+    // The AlphaSquare effect prints each character you type, using your
+    // keyboard's LEDs as a display
+    AlphaSquareEffect,
 
-  // The stalker effect lights up the keys you've pressed recently
-  StalkerEffect,
+    // The stalker effect lights up the keys you've pressed recently
+    StalkerEffect,
 
-  // The LED Palette Theme plugin provides a shared palette for other plugins,
-  // like Colormap below
-  LEDPaletteTheme,
+    // The LED Palette Theme plugin provides a shared palette for other plugins,
+    // like Colormap below
+    LEDPaletteTheme,
 
-  // The Colormap effect makes it possible to set up per-layer colormaps
-  ColormapEffect,
+    // The Colormap effect makes it possible to set up per-layer colormaps
+    ColormapEffect,
 
-  // The numpad plugin is responsible for lighting up the 'numpad' mode
-  // with a custom LED effect
-  NumPad,
+    // The numpad plugin is responsible for lighting up the 'numpad' mode
+    // with a custom LED effect
+    NumPad,
 
-  // The macros plugin adds support for macros
-  Macros,
+    // The macros plugin adds support for macros
+    Macros,
 
-  // The MouseKeys plugin lets you add keys to your keymap which move the mouse.
-  MouseKeys,
+    // The MouseKeys plugin lets you add keys to your keymap which move the mouse.
+    MouseKeys,
 
-  // The HostPowerManagement plugin allows us to turn LEDs off when then host
-  // goes to sleep, and resume them when it wakes up.
-  HostPowerManagement,
+    // The HostPowerManagement plugin allows us to turn LEDs off when then host
+    // goes to sleep, and resume them when it wakes up.
+    HostPowerManagement,
 
-  // The MagicCombo plugin lets you use key combinations to trigger custom
-  // actions - a bit like Macros, but triggered by pressing multiple keys at the
-  // same time.
-  MagicCombo,
+    // The MagicCombo plugin lets you use key combinations to trigger custom
+    // actions - a bit like Macros, but triggered by pressing multiple keys at the
+    // same time.
+    MagicCombo,
 
-  // The USBQuirks plugin lets you do some things with USB that we aren't
-  // comfortable - or able - to do automatically, but can be useful
-  // nevertheless. Such as toggling the key report protocol between Boot (used
-  // by BIOSes) and Report (NKRO).
-  USBQuirks
-);
+    // The USBQuirks plugin lets you do some things with USB that we aren't
+    // comfortable - or able - to do automatically, but can be useful
+    // nevertheless. Such as toggling the key report protocol between Boot (used
+    // by BIOSes) and Report (NKRO).
+    USBQuirks);
 
 /** The 'setup' function is one of the two standard Arduino sketch functions.
  * It's called when your keyboard first powers up. This is where you set up
  * Kaleidoscope and any plugins.
  */
-void setup() {
+void setup()
+{
   // First, call Kaleidoscope's internal setup function
   Kaleidoscope.setup();
 
@@ -574,6 +581,7 @@ void setup() {
   * call Kaleidoscope.loop(); and not do anything custom here.
   */
 
-void loop() {
+void loop()
+{
   Kaleidoscope.loop();
 }
