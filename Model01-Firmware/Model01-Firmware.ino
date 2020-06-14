@@ -14,8 +14,6 @@
 // The Kaleidoscope core
 #include "Kaleidoscope.h"
 
-#include "Kaleidoscope-TapDance.h"
-
 // Support for storing the keymap in EEPROM
 #include "Kaleidoscope-EEPROM-Settings.h"
 #include "Kaleidoscope-EEPROM-Keymap.h"
@@ -39,23 +37,8 @@
 // when the keyboard is connected to a computer (or that computer is powered on)
 #include "Kaleidoscope-LEDEffect-BootGreeting.h"
 
-// Support for LED modes that set all LEDs to a single color
-#include "Kaleidoscope-LEDEffect-SolidColor.h"
-
-// Support for an LED mode that makes all the LEDs 'breathe'
-#include "Kaleidoscope-LEDEffect-Breathe.h"
-
-// Support for an LED mode that makes a red pixel chase a blue pixel across the keyboard
-#include "Kaleidoscope-LEDEffect-Chase.h"
-
 // Support for LED modes that pulse the keyboard's LED in a rainbow pattern
 #include "Kaleidoscope-LEDEffect-Rainbow.h"
-
-// Support for an LED mode that lights up the keys as you press them
-#include "Kaleidoscope-LED-Stalker.h"
-
-// Support for an LED mode that prints the keys you press in letters 4px high
-#include "Kaleidoscope-LED-AlphaSquare.h"
 
 // Support for shared palettes for other plugins, like Colormap below
 #include "Kaleidoscope-LED-Palette-Theme.h"
@@ -155,17 +138,19 @@ enum
 KEYMAPS(
 
   [PRIMARY] = KEYMAP_STACKED
-  (___,          Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
-   Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
-   Key_PageUp,   Key_A, Key_S, Key_D, Key_F, Key_G,
-   Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
+  (___,          Key_1,    Key_2,    Key_3,    Key_4,    Key_5,    Key_LEDEffectNext,
+   Key_Backtick, Key_Q,    Key_W,    Key_E,    Key_R,    Key_T,    Key_Tab,
+   Key_PageUp,   Key_A,    Key_S,    Key_D,    Key_F,    Key_G,
+   Key_PageDown, Key_Z,    Key_X,    Key_C,    Key_V,    Key_B,    Key_Escape,
+
    Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
    ShiftToLayer(FUNCTION),
 
-   Key_PrintScreen,  Key_6, Key_7, Key_8,     Key_9,         Key_0,         ShiftToLayer(NUMPAD),
-   Key_Enter,        Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
-                     Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
-   Key_RightAlt,     Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
+   Key_PrintScreen, Key_6,    Key_7,    Key_8,     Key_9,      Key_0,         ShiftToLayer(NUMPAD),
+   Key_Enter,       Key_Y,    Key_U,    Key_I,     Key_O,      Key_P,         Key_Equals,
+                    Key_H,    Key_J,    Key_K,     Key_L,      Key_Semicolon, Key_Quote,
+   Key_RightAlt,    Key_N,    Key_M,    Key_Comma, Key_Period, Key_Slash,     Key_Minus,
+
    Key_RightShift,   Key_LeftAlt, Key_Spacebar, Key_RightControl,
    ShiftToLayer(FUNCTION)),
 
@@ -176,6 +161,7 @@ KEYMAPS(
    ___, ___, ___, ___, ___, ___, ___,
    ___, ___, ___, ___, ___, ___,
    ___, ___, ___, ___, ___, ___, ___,
+
    ___, ___, ___, ___,
    ___,
 
@@ -183,6 +169,7 @@ KEYMAPS(
    ___, ___, Key_4, Key_5,      Key_6,              Key_KeypadAdd,      ___,
         ___, Key_1, Key_2,      Key_3,              Key_Equals,         ___,
    ___, ___, Key_0, Key_Period, Key_KeypadMultiply, Key_KeypadDivide,   Key_Enter,
+
    ___, ___, ___, ___,
    ___),
 
@@ -191,12 +178,14 @@ KEYMAPS(
    Key_Tab,  ___,              Key_mouseUp, ___,        Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseWarpNE,
    Key_Home, Key_mouseL,       Key_mouseDn, Key_mouseR, Key_mouseBtnL, Key_mouseWarpNW,
    Key_End,  Key_PrintScreen,  Key_Insert,  ___,        Key_mouseBtnM, Key_mouseWarpSW,  Key_mouseWarpSE,
+
    ___, Key_Delete, ___, ___,
    ___,
 
    Consumer_ScanPreviousTrack, Key_F6,                 Key_F7,                   Key_F8,                   Key_F9,          Key_F10,          Key_F11,
    Consumer_PlaySlashPause,    Consumer_ScanNextTrack, Key_LeftCurlyBracket,     Key_RightCurlyBracket,    Key_LeftBracket, Key_RightBracket, Key_F12,
                                Key_LeftArrow,          Key_DownArrow,            Key_UpArrow,              Key_RightArrow,  ___,              ___,
+
    Key_PcApplication,          Consumer_Mute,          Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___,             Key_Backslash,    Key_Pipe,
    ___, ___, Key_Enter, ___,
    ___)
@@ -205,17 +194,6 @@ KEYMAPS(
 /* Re-enable astyle's indent enforcement */
 // *INDENT-ON*
 // clang-format on
-
-void tapDanceAction(uint8_t tap_dance_index, byte row, byte col, uint8_t tap_count,
-                    kaleidoscope::plugin::TapDance::ActionType tap_dance_action)
-{
-  switch (tap_dance_index)
-  {
-  case 0:
-    return tapDanceActionKeys(tap_count, tap_dance_action,
-                              Key_NoEvent, Key_Enter);
-  }
-}
 
 /** versionInfoMacro handles the 'firmware version info' macro
  *  When a key bound to the macro is pressed, this macro
@@ -284,14 +262,6 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState)
 // These 'solid' color effect definitions define a rainbow of
 // LED color modes calibrated to draw 500mA or less on the
 // Keyboardio Model 01.
-
-static kaleidoscope::plugin::LEDSolidColor solidRed(160, 0, 0);
-static kaleidoscope::plugin::LEDSolidColor solidOrange(140, 70, 0);
-static kaleidoscope::plugin::LEDSolidColor solidYellow(130, 100, 0);
-static kaleidoscope::plugin::LEDSolidColor solidGreen(0, 160, 0);
-static kaleidoscope::plugin::LEDSolidColor solidBlue(0, 70, 130);
-static kaleidoscope::plugin::LEDSolidColor solidIndigo(0, 0, 170);
-static kaleidoscope::plugin::LEDSolidColor solidViolet(130, 0, 120);
 
 /** toggleLedsOnSuspendResume toggles the LEDs off when the host goes to sleep,
  * and turns them back on when it wakes up.
@@ -372,7 +342,6 @@ USE_MAGIC_COMBOS({.action = toggleKeyboardProtocol,
 // The order can be important. For example, LED effects are
 // added in the order they're listed here.
 KALEIDOSCOPE_INIT_PLUGINS(
-    TapDance,
     // The EEPROMSettings & EEPROMKeymap plugins make it possible to have an
     // editable keymap in EEPROM.
     EEPROMSettings,
@@ -458,9 +427,6 @@ void setup()
   // needs to be explicitly told which keymap layer is your numpad layer
   NumPad.numPadLayer = NUMPAD;
 
-  // We configure the AlphaSquare effect to use RED letters
-  AlphaSquare.color = CRGB(255, 0, 0);
-
   // We set the brightness of the rainbow effects to 150 (on a scale of 0-255)
   // This draws more than 500mA, but looks much nicer than a dimmer effect
   LEDRainbowEffect.brightness(150);
@@ -468,11 +434,6 @@ void setup()
 
   // Set the action key the test mode should listen for to Left Fn
   HardwareTestMode.setActionKey(R3C6);
-
-  // The LED Stalker mode has a few effects. The one we like is called
-  // 'BlazingTrail'. For details on other options, see
-  // https://github.com/keyboardio/Kaleidoscope/blob/master/doc/plugin/LED-Stalker.md
-  StalkerEffect.variant = STALKER(BlazingTrail);
 
   // We want to make sure that the firmware starts with LED effects off
   // This avoids over-taxing devices that don't have a lot of power to share
@@ -490,6 +451,9 @@ void setup()
   // maps for. To make things simple, we set it to five layers, which is how
   // many editable layers we have (see above).
   ColormapEffect.max_layers(5);
+
+  MouseKeys.accelDelay = 20;
+  MouseKeys.speed = 5;
 }
 
 /** loop is the second of the standard Arduino sketch functions.
