@@ -14,6 +14,8 @@
 // The Kaleidoscope core
 #include "Kaleidoscope.h"
 
+#include "Kaleidoscope-SpaceCadet.h"
+
 // Support for storing the keymap in EEPROM
 #include "Kaleidoscope-EEPROM-Settings.h"
 #include "Kaleidoscope-EEPROM-Keymap.h"
@@ -399,6 +401,8 @@ KALEIDOSCOPE_INIT_PLUGINS(
     // The MouseKeys plugin lets you add keys to your keymap which move the mouse.
     MouseKeys,
 
+    SpaceCadet,
+
     // The HostPowerManagement plugin allows us to turn LEDs off when then host
     // goes to sleep, and resume them when it wakes up.
     HostPowerManagement,
@@ -454,6 +458,22 @@ void setup()
 
   MouseKeys.accelDelay = 20;
   MouseKeys.speed = 5;
+
+
+  // Format {KeyThatWasPressed, AlternativeKeyToSend} uses the global timeout
+  // Full format {KeyThatWasPressed, AlternativeKeyToSend, TimeoutInMS}
+  // Note: must end with the SPACECADET_MAP_END delimiter
+  static kaleidoscope::plugin::SpaceCadet::KeyBinding spacecadetmap[] = {
+    {Key_LeftShift,    Key_LeftParen},
+    {Key_RightShift,   Key_RightParen},
+    {Key_LeftGui,      Key_LeftCurlyBracket, 250},
+    {Key_RightAlt,     Key_RightCurlyBracket},
+    {Key_LeftAlt,      Key_RightCurlyBracket},
+    {Key_LeftControl,  Key_LeftBracket},
+    {Key_RightControl, Key_RightBracket},
+    SPACECADET_MAP_END
+  };
+  SpaceCadet.map = spacecadetmap;
 }
 
 /** loop is the second of the standard Arduino sketch functions.
