@@ -466,11 +466,15 @@ void setup()
   static kaleidoscope::plugin::SpaceCadet::KeyBinding spacecadetmap[] = {
     {Key_LeftShift,    Key_LeftParen},
     {Key_RightShift,   Key_RightParen},
-    {Key_LeftGui,      Key_LeftCurlyBracket, 250},
+    // These are great but also do not allow for quick combos like
+    // Ctrl + Shift + B
+    // You have to do Ctrl + Shift + wait a full second + B
+    /*{Key_LeftGui,      Key_LeftCurlyBracket, 250},
     {Key_RightAlt,     Key_RightCurlyBracket},
     {Key_LeftAlt,      Key_RightCurlyBracket},
     {Key_LeftControl,  Key_LeftBracket},
     {Key_RightControl, Key_RightBracket},
+    */
     SPACECADET_MAP_END
   };
   SpaceCadet.map = spacecadetmap;
