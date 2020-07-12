@@ -1,0 +1,5 @@
+{
+    "board": "keyboardio:avr:model01",
+    "programmer": "AVRISP mkII",
+    "port": "COM5"
+}

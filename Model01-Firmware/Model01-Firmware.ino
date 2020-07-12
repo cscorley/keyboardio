@@ -273,13 +273,10 @@ void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event 
   switch (event)
   {
   case kaleidoscope::plugin::HostPowerManagement::Suspend:
-    LEDControl.set_all_leds_to({0, 0, 0});
-    LEDControl.syncLeds();
-    LEDControl.paused = true;
+    LEDControl.disable();
     break;
   case kaleidoscope::plugin::HostPowerManagement::Resume:
-    LEDControl.paused = false;
-    LEDControl.refreshAll();
+    LEDControl.enable();
     break;
   case kaleidoscope::plugin::HostPowerManagement::Sleep:
     break;
@@ -459,24 +456,18 @@ void setup()
   MouseKeys.accelDelay = 20;
   MouseKeys.speed = 5;
 
-
   // Format {KeyThatWasPressed, AlternativeKeyToSend} uses the global timeout
   // Full format {KeyThatWasPressed, AlternativeKeyToSend, TimeoutInMS}
   // Note: must end with the SPACECADET_MAP_END delimiter
   static kaleidoscope::plugin::SpaceCadet::KeyBinding spacecadetmap[] = {
-    {Key_LeftShift,    Key_LeftParen},
-    {Key_RightShift,   Key_RightParen},
-    // These are great but also do not allow for quick combos like
-    // Ctrl + Shift + B
-    // You have to do Ctrl + Shift + wait a full second + B
-    /*{Key_LeftGui,      Key_LeftCurlyBracket, 250},
-    {Key_RightAlt,     Key_RightCurlyBracket},
-    {Key_LeftAlt,      Key_RightCurlyBracket},
-    {Key_LeftControl,  Key_LeftBracket},
-    {Key_RightControl, Key_RightBracket},
-    */
-    SPACECADET_MAP_END
-  };
+      //{Key_LeftControl, Key_LeftBracket},
+      //{Key_RightControl, Key_RightBracket},
+      {Key_LeftShift, Key_LeftParen},
+      {Key_RightShift, Key_RightParen},
+      //{Key_LeftGui, Key_LeftCurlyBracket, 250},
+      //{Key_RightAlt, Key_RightCurlyBracket},
+      //{Key_LeftAlt, Key_RightCurlyBracket},
+      SPACECADET_MAP_END};
   SpaceCadet.map = spacecadetmap;
 }
 
