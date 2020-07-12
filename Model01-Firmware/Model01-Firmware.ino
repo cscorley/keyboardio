@@ -230,7 +230,7 @@ static void anyKeyMacro(uint8_t keyState)
   }
 
   if (keyIsPressed(keyState))
-    kaleidoscope::hid::pressKey(lastKey, toggledOn);
+    Kaleidoscope.hid().keyboard().pressKey(lastKey, toggledOn);
 }
 
 /** macroAction dispatches keymap events that are tied to a macro
