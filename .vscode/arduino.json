@@ -1,5 +1,6 @@
 {
     "board": "keyboardio:avr:model01",
     "programmer": "AVRISP mkII",
-    "port": "COM5"
+    "port": "COM5",
+    "sketch": "Model01-Firmware\\Model01-Firmware.ino"
 }
