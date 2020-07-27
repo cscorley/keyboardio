@@ -3,7 +3,7 @@
 // See "LICENSE" for license details
 
 #ifndef BUILD_INFORMATION
-#define BUILD_INFORMATION "locally built"
+#define BUILD_INFORMATION "- Built on " __DATE__ " at " __TIME__
 #endif
 
 /**
@@ -156,13 +156,13 @@ KEYMAPS(
    ShiftToLayer(FUNCTION)),
 
   [NUMPAD] =  KEYMAP_STACKED
-  (___, ___, ___, ___, ___, ___, ___,
-   ___, ___, ___, ___, ___, ___, ___,
-   ___, ___, ___, ___, ___, ___,
-   ___, ___, ___, ___, ___, ___, ___,
+  (M(MACRO_VERSION_INFO), ___, ___, ___, ___, ___, ___,
+                     ___, ___, ___, ___, ___, ___, ___,
+                     ___, ___, ___, ___, ___, ___,
+                     ___, ___, ___, ___, ___, ___, ___,
 
-   ___, ___, ___, ___,
-   ___,
+                     ___, ___, ___, ___,
+                     ___,
 
    ___, ___, Key_7, Key_8,      Key_9,              Key_KeypadSubtract, ___,
    ___, ___, Key_4, Key_5,      Key_6,              Key_KeypadAdd,      ___,
@@ -173,10 +173,10 @@ KEYMAPS(
    ___),
 
   [FUNCTION] =  KEYMAP_STACKED
-  (___,      Key_F1,            Key_F2,        Key_F3,      Key_F4,        Key_F5,        Key_CapsLock,
-   Key_Tab,  Key_mouseScrollUp, Key_mouseBtnL, Key_mouseUp, Key_mouseBtnR, ___,           ___,
-   Key_Home, Key_mouseScrollDn, Key_mouseL,    Key_mouseDn, Key_mouseR,    Key_mouseBtnL,
-   Key_End,  Key_PrintScreen,   Key_Insert,    ___,         Key_mouseBtnM, ___,           ___,
+  (___,      Key_F1,            Key_F2,        Key_F3,          Key_F4,           Key_F5, Key_CapsLock,
+   Key_Tab,  ___,               Key_mouseUp,   Key_LeftBracket, Key_RightBracket, ___,    Key_mouseScrollUp,
+   Key_Home, Key_mouseL,        Key_mouseDn,   Key_mouseR,      Key_mouseBtnL,    Key_mouseBtnR,
+   Key_End,  ___,               Key_Insert,    ___,             Key_mouseBtnM,    ___,    Key_mouseScrollDn,
 
    ___, Key_Delete, ___, ___,
    ___,
@@ -228,7 +228,6 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState)
   case MACRO_VERSION_INFO:
     versionInfoMacro(keyState);
     break;
-
   }
   return MACRO_NONE;
 }
@@ -245,10 +244,15 @@ void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event 
   switch (event)
   {
   case kaleidoscope::plugin::HostPowerManagement::Suspend:
-    LEDControl.disable();
+    //LEDControl.disable();
+    LEDControl.set_all_leds_to({0, 0, 0});
+    LEDControl.syncLeds();
+    LEDControl.paused = true;
     break;
   case kaleidoscope::plugin::HostPowerManagement::Resume:
-    LEDControl.enable();
+    //LEDControl.enable();
+    LEDControl.paused = false;
+    LEDControl.refreshAll();
     break;
   case kaleidoscope::plugin::HostPowerManagement::Sleep:
     break;
@@ -418,15 +422,18 @@ void setup()
   // one wants to use these layers, just set the default layer to one in EEPROM,
   // by using the `settings.defaultLayer` Focus command, or by using the
   // `keymap.onlyCustom` command to use EEPROM layers only.
-  EEPROMKeymap.setup(5);
+  EEPROMKeymap.setup(0);
 
   // We need to tell the Colormap plugin how many layers we want to have custom
   // maps for. To make things simple, we set it to five layers, which is how
   // many editable layers we have (see above).
-  ColormapEffect.max_layers(5);
+  ColormapEffect.max_layers(0);
 
-  MouseKeys.accelDelay = 20;
-  MouseKeys.speed = 5;
+  MouseKeys.speed = 12;
+  MouseKeys.speedDelay = 1;
+  MouseKeys.accelSpeed = 4;
+  MouseKeys.accelDelay = 64;
+  MouseKeys.setSpeedLimit(128);
 
   // Format {KeyThatWasPressed, AlternativeKeyToSend} uses the global timeout
   // Full format {KeyThatWasPressed, AlternativeKeyToSend, TimeoutInMS}
